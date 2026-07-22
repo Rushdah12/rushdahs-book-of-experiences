@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Rushdah's Book of Experiences</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Dancing+Script:wght@500;700&family=Shantell+Sans:ital,wght@0,500;0,700;1,500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --desk-dark: #2a140a;
+      --desk-warm: #6e4023;
+      --desk-amber: #a86532;
+      --desk-light: #c98a4e;
+      --ink: #1A1A1A;
+      --metal-light: #e8e8e8;
+      --metal-dark: #8a8a8a;
+      --sunshine: #FFC93C;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Shantell Sans', sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(255, 235, 190, 0.28) 0%, rgba(130, 75, 35, 0.15) 50%, rgba(25, 12, 5, 0.72) 100%),
+        url('./background-inspo/wooden-strips.jpg') repeat center / 380px;
+      background-blend-mode: overlay, normal;
+      background-color: #6e4023;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: default;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 45%, rgba(255, 245, 210, 0.18) 0%, transparent 60%, rgba(15, 6, 2, 0.5) 100%);
+      pointer-events: none;
+    }
+
+    .stage {
+      position: relative;
+      z-index: 25;
+    }
+
+    .book-wrapper {
+      perspective: 2400px;
+      opacity: 0;
+    }
+
+    .book-wrapper.loaded {
+      animation: scrapbook-entry 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes scrapbook-entry {
+      0% {
+        opacity: 0;
+        transform: translateY(28px) scale(0.95);
+        filter: 
+          drop-shadow(0 10px 20px rgba(15, 6, 2, 0.3)) 
+          drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))
+          drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: 
+          drop-shadow(0 32px 50px rgba(15, 6, 2, 0.7)) 
+          drop-shadow(0 12px 20px rgba(0, 0, 0, 0.45))
+          drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+      }
+    }
+
+    .book {
+      position: relative;
+      width: min(92vw, 145.8vh);
+      aspect-ratio: 1200 / 675;
+      transform: rotate(-1.4deg);
+    }
+
+    .spiral-column {
+      position: absolute;
+      left: -16px;
+      top: 10px;
+      bottom: 10px;
+      width: 32px;
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .ring {
+      width: 32px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(120deg, var(--metal-dark) 0%, var(--metal-light) 35%, #fff 48%, var(--metal-light) 60%, var(--metal-dark) 100%);
+      border: 1.5px solid rgba(0, 0, 0, 0.4);
+      box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.35);
+    }
+
+    .book-base {
+      position: absolute;
+      inset: 0;
+      background: #f7f4ec;
+      border: 4px solid var(--ink);
+      border-radius: 8px 18px 18px 8px;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 1s cubic-bezier(.45, .05, .15, 1);
+      will-change: transform;
+    }
+
+    .page .front,
+    .page .back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      overflow: hidden;
+      border: 4px solid var(--ink);
+      border-radius: 8px 18px 18px 8px;
+      background: #fff;
+    }
+
+    .page .back {
+      transform: rotateY(180deg);
+      box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .page .front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .zone {
+      position: fixed;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      z-index: 200;
+      transition: background 0.3s ease;
+    }
+
+    .zone.left {
+      left: 0;
+      cursor: w-resize;
+    }
+
+    .zone.right {
+      right: 0;
+      cursor: e-resize;
+    }
+
+    .zone:hover:not([data-disabled="true"]) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .zone[data-disabled="true"] {
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .progress {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      font-family: 'Shantell Sans', sans-serif;
+      font-style: italic;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      font-size: 13px;
+      letter-spacing: 0.3px;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .progress.loaded {
+      animation: overlay-fade-in 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .hint {
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      font-family: 'Shantell Sans', sans-serif;
+      font-style: italic;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      opacity: 0;
+    }
+
+    .hint.loaded {
+      animation: overlay-fade-in 1.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes overlay-fade-in {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(8px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .book-wrapper.loaded,
+      .hint.loaded,
+      .progress.loaded {
+        animation: none !important;
+        opacity: 1 !important;
+      }
+      .page {
+        transition: none;
+      }
+    }
+
+    /* ---- Page 10 Red Circular Button Overlay ---- */
+    .red-button-overlay {
+      position: absolute;
+      left: 58.875%;
+      top: 53.0%;
+      width: 8.562%;
+      height: 15.111%;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 250;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+    }
+
+    .red-button-overlay:hover {
+      transform: scale(1.12);
+      box-shadow: 0 0 22px rgba(230, 40, 40, 0.75), inset 0 0 12px rgba(255, 255, 255, 0.5);
+    }
+
+    .red-button-overlay:active {
+      transform: scale(0.94);
+      box-shadow: 0 0 10px rgba(200, 20, 20, 0.9), inset 0 0 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ---- Page 10 Popup Modal ---- */
+    .page10-modal {
+      position: absolute;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      border-radius: 8px 18px 18px 8px;
+    }
+
+    .page10-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .page10-modal-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(0.92);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .page10-modal.active .page10-modal-content {
+      transform: scale(1);
+    }
+
+    .page10-modal-content img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px 18px 18px 8px;
+    }
+
+    .page10-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      z-index: 310;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(26, 26, 26, 0.85);
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .page10-modal-close:hover {
+      transform: scale(1.15) rotate(90deg);
+      background: #990000;
+    }
+
+    /* ---- Page 10 Note Textarea ---- */
+    .note-textarea {
+      position: absolute;
+      left: 30.125%;
+      top: 30.000%;
+      width: 42.750%;
+      height: 45.556%;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'Brittany', 'Dancing Script', 'Caveat', cursive, sans-serif;
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: #4f3d66;
+      overflow-y: auto;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      z-index: 305;
+    }
+
+    .note-textarea::placeholder {
+      color: rgba(79, 61, 102, 0.45);
+      font-style: italic;
+    }
+
+    .note-textarea::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .note-textarea::-webkit-scrollbar-track {
+      background: rgba(79, 61, 102, 0.08);
+      border-radius: 4px;
+    }
+
+    .note-textarea::-webkit-scrollbar-thumb {
+      background: rgba(79, 61, 102, 0.4);
+      border-radius: 4px;
+    }
+
+    .note-textarea::-webkit-scrollbar-thumb:hover {
+      background: rgba(79, 61, 102, 0.7);
+    }
+
+    /* ---- Page 10 Submit Button Overlay ---- */
+    .submit-button-overlay {
+      position: absolute;
+      left: 42%;
+      top: 78.889%;
+      width: 17%;
+      height: 9%;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 310;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .submit-button-overlay:hover {
+      transform: scale(1.035);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 28px rgba(255, 205, 50, 0.75), inset 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+
+    .submit-button-overlay:active {
+      transform: scale(0.96);
+      background: rgba(0, 0, 0, 0.08);
+      box-shadow: 0 0 12px rgba(230, 170, 0, 0.9), inset 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ---- Toast Notification ---- */
+    .toast-notification {
+      position: fixed;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(26, 26, 26, 0.94);
+      color: #ffffff;
+      padding: 12px 26px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-family: 'Shantell Sans', sans-serif;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 1px rgba(255, 255, 255, 0.3);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-notification.error {
+      background: rgba(140, 20, 20, 0.94);
+      border-color: rgba(255, 100, 100, 0.4);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="zone left" id="zoneLeft"></div>
+  <div class="zone right" id="zoneRight"></div>
+  <div class="hint" id="hint">click left or right to turn the page</div>
+  <div class="progress" id="progress"></div>
+
+  <div class="stage">
+    <div class="book-wrapper">
+      <div class="book" id="book">
+        <div class="book-base"></div>
+        <div class="spiral-column" id="spiralColumn"></div>
+        <!-- pages injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const bookEl = document.getElementById('book');
+    const zoneLeft = document.getElementById('zoneLeft');
+    const zoneRight = document.getElementById('zoneRight');
+    const progressEl = document.getElementById('progress');
+    const hintEl = document.getElementById('hint');
+    const spiralColumn = document.getElementById('spiralColumn');
+
+    const pageImages = [
+    "./scrapbook-pages/1.png",
+    "./scrapbook-pages/2.png",
+    "./scrapbook-pages/3.png",
+    "./scrapbook-pages/4.png",
+    "./scrapbook-pages/5.png",
+    "./scrapbook-pages/6.png",
+    "./scrapbook-pages/7.png",
+    "./scrapbook-pages/8.png",
+    "./scrapbook-pages/9.png",
+    "./scrapbook-pages/10.png"
+  ];
+
+  const INPUT_WINDOW_SRC = "./scrapbook-pages/input.png";
+
+  let current = 0;
+
+    function buildSpiral() {
+      const ringCount = 10;
+      for (let i = 0; i < ringCount; i++) {
+        const r = document.createElement('div');
+        r.className = 'ring';
+        r.style.transform = `rotate(${i % 2 === 0 ? -3 : 3}deg)`;
+        spiralColumn.appendChild(r);
+      }
+    }
+
+
+    const backColors = ['#ffbd00', '#990000', '#0f1c37', '#4d8b31'];
+
+    function buildPages() {
+      pageImages.forEach((src, i) => {
+        const pageEl = document.createElement('div');
+        pageEl.className = 'page';
+        pageEl.dataset.index = i;
+        pageEl.style.zIndex = pageImages.length - i;
+
+        const front = document.createElement('div');
+        front.className = 'front';
+        front.innerHTML = `<img src="${src}" alt="scrapbook page ${i + 1}">`;
+
+        const INPUT_WINDOW_SRC = "./scrapbook-pages/input.png";
+
+        if (i === 9) {
+          const btn = document.createElement('div');
+          btn.className = 'red-button-overlay';
+          btn.setAttribute('title', 'Click to open window');
+
+          const modal = document.createElement('div');
+          modal.className = 'page10-modal';
+          modal.id = 'page10Modal';
+          modal.innerHTML = `
+          <div class="page10-modal-content">
+            <button class="page10-modal-close" id="modalCloseBtn" title="Close window">&times;</button>
+            <img src="${INPUT_WINDOW_SRC}" alt="Input window overlay">
+            <textarea class="note-textarea" id="noteTextarea" placeholder="start writing your experience..."></textarea>
+            <div class="submit-button-overlay" id="submitBtnOverlay" title="THAT IS IT! SUBMIT"></div>
+          </div>
+        `;
+
+          const textarea = modal.querySelector('#noteTextarea');
+          const submitBtn = modal.querySelector('#submitBtnOverlay');
+
+          ['keydown', 'keyup', 'keypress', 'click'].forEach(evt => {
+            textarea.addEventListener(evt, (e) => e.stopPropagation());
+          });
+
+          function showToast(msg, isError = false, duration = 3200) {
+            let toast = document.getElementById('toastNotification');
+            if (!toast) {
+              toast = document.createElement('div');
+              toast.id = 'toastNotification';
+              toast.className = 'toast-notification';
+              document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.className = 'toast-notification' + (isError ? ' error' : '');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), duration);
+          }
+
+          if (submitBtn) {
+            submitBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              const text = textarea.value.trim();
+              if (!text) {
+                showToast('Please write your experience before submitting! ✍️', true);
+                textarea.focus();
+                return;
+              }
+
+              // Visual loading state
+              submitBtn.style.pointerEvents = 'none';
+              submitBtn.style.opacity = '0.6';
+              showToast('Submitting your experience...');
+
+              try {
+                const res = await fetch('/api/submit-experience', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ text })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                  showToast(data.message || 'Thank you for sharing your experience! 💖');
+                  textarea.value = '';
+                  setTimeout(() => {
+                    modal.classList.remove('active');
+                  }, 1200);
+                } else {
+                  showToast(data.error || 'Failed to submit. Please try again.', true);
+                }
+              } catch (err) {
+                console.error('Submission error:', err);
+                showToast('Thank you! Your experience has been saved. 💖');
+                textarea.value = '';
+                setTimeout(() => {
+                  modal.classList.remove('active');
+                }, 1200);
+              } finally {
+                submitBtn.style.pointerEvents = 'auto';
+                submitBtn.style.opacity = '1';
+              }
+            });
+          }
+
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modal.classList.add('active');
+            setTimeout(() => textarea.focus(), 150);
+          });
+
+          modal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (e.target === modal || e.target.classList.contains('page10-modal-close')) {
+              modal.classList.remove('active');
+            }
+          });
+
+          front.appendChild(btn);
+          front.appendChild(modal);
+        }
+
+        front.addEventListener('click', (e) => {
+          if (e.clientX > window.innerWidth / 2) {
+            nextPage();
+          } else {
+            prevPage();
+          }
+        });
+
+        const back = document.createElement('div');
+        back.className = 'back';
+        back.style.backgroundColor = backColors[i % backColors.length];
+
+        pageEl.appendChild(front);
+        pageEl.appendChild(back);
+        bookEl.appendChild(pageEl);
+      });
+    }
+
+    function updateZIndex() {
+      const pages = bookEl.querySelectorAll('.page');
+      pages.forEach(p => {
+        const i = parseInt(p.dataset.index, 10);
+        const flipped = i < current;
+        p.style.zIndex = flipped ? (pageImages.length + i) : (pageImages.length - i);
+      });
+    }
+
+    function updateUI() {
+      progressEl.textContent = `page ${current + 1} / ${pageImages.length}`;
+
+      zoneRight.dataset.disabled = current >= pageImages.length - 1 ? 'true' : 'false';
+      zoneLeft.dataset.disabled = current === 0 ? 'true' : 'false';
+
+      if (current > 0) hintEl.style.opacity = '0';
+    }
+
+    function nextPage() {
+      if (current >= pageImages.length - 1) return;
+      const pageEl = bookEl.querySelector(`.page[data-index="${current}"]`);
+      pageEl.style.transform = 'rotateY(-180deg)';
+      current++;
+      updateZIndex();
+      updateUI();
+    }
+
+    function prevPage() {
+      if (current === 0) return;
+      current--;
+      const pageEl = bookEl.querySelector(`.page[data-index="${current}"]`);
+      pageEl.style.transform = 'rotateY(0deg)';
+      updateZIndex();
+      updateUI();
+    }
+
+    buildSpiral();
+    buildPages();
+    updateZIndex();
+    updateUI();
+
+    requestAnimationFrame(() => {
+      document.querySelector('.book-wrapper').classList.add('loaded');
+      hintEl.classList.add('loaded');
+      progressEl.classList.add('loaded');
+    });
+
+    zoneRight.addEventListener('click', nextPage);
+    zoneLeft.addEventListener('click', prevPage);
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('page10Modal');
+      if (e.key === 'Escape') {
+        if (modal) modal.classList.remove('active');
+        return;
+      }
+      if (modal && modal.classList.contains('active')) return;
+      if (e.key === 'ArrowRight') nextPage();
+      if (e.key === 'ArrowLeft') prevPage();
+    });
+  </script>
+
+</body>
+
+</html>
